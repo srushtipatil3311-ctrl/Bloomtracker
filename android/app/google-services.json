@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "289729266824",
+    "project_id": "bloom-b8bfe",
+    "storage_bucket": "bloom-b8bfe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:289729266824:android:c275d5dd72c05dbf63cb3d",
+        "android_client_info": {
+          "package_name": "com.example.bloom"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUWR20l6ACPD11NqSYzaAI14EPIzyS2EI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:289729266824:android:76e119ee32a9743963cb3d",
+        "android_client_info": {
+          "package_name": "com.example.bloom_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUWR20l6ACPD11NqSYzaAI14EPIzyS2EI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
