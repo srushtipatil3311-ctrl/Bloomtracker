@@ -39,14 +39,13 @@ class _BloomLoginPageState extends State<BloomLoginPage> {
 
       if (!mounted) return;
 
-      // ✅ IMPORTANT:
-      // After login → go to Splash
-      // Splash will decide next screen
-      Navigator.pushReplacement(
+      // ✅ CLEAN NAVIGATION (IMPORTANT FIX)
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
           builder: (_) => const BloomSplashScreen(),
         ),
+            (route) => false,
       );
     } on FirebaseAuthException catch (e) {
       String message = 'Login failed';
@@ -123,9 +122,7 @@ class _BloomLoginPageState extends State<BloomLoginPage> {
                   width: 160,
                   height: 160,
                 ),
-
                 const SizedBox(height: 20),
-
                 Text(
                   'Welcome Back',
                   style: GoogleFonts.poppins(
@@ -134,7 +131,6 @@ class _BloomLoginPageState extends State<BloomLoginPage> {
                     color: textColor,
                   ),
                 ),
-
                 const SizedBox(height: 36),
 
                 /// EMAIL

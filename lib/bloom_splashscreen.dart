@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'bloom_login_page.dart';
 import 'health_profile_page.dart';
+import 'home_page.dart'; // ✅ CHANGED (root with bottom nav)
 
 class BloomSplashScreen extends StatefulWidget {
   const BloomSplashScreen({super.key});
@@ -18,11 +20,10 @@ class _BloomSplashScreenState extends State<BloomSplashScreen>
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
 
-  // 🔁 NAVIGATION LOGIC (YOUR FLOW)
   Future<void> _navigateAfterSplash() async {
     final user = FirebaseAuth.instance.currentUser;
 
-    // 🔹 CASE 1: User NOT logged in
+    // 🔹 Not logged in
     if (user == null) {
       Navigator.pushReplacement(
         context,
@@ -31,41 +32,25 @@ class _BloomSplashScreenState extends State<BloomSplashScreen>
       return;
     }
 
-    // 🔹 CASE 2: User logged in → check Firestore
+    // 🔹 Logged in → check onboarding
     final doc = await FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
         .get();
 
-    final data = doc.data();
+    final data = doc.data() ?? {};
+    final onboardingDone = data['onboardingCompleted'] ?? false;
 
-    final bool healthDone = data?['healthProfileCompleted'] ?? false;
-    final bool symptomsDone = data?['symptomsCompleted'] ?? false;
-
-    if (!healthDone) {
+    if (!onboardingDone) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const HealthProfilePage()),
       );
-    } else if (!symptomsDone) {
-      // TEMP until symptoms page is ready
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Symptoms Page Coming Soon')),
-          ),
-        ),
-      );
     } else {
-      // TEMP until calendar page is ready
+      // ✅ IMPORTANT FIX: go to HomePage (bottom navigation root)
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Calendar Page')),
-          ),
-        ),
+        MaterialPageRoute(builder: (_) => const HomePage()),
       );
     }
   }
@@ -74,25 +59,21 @@ class _BloomSplashScreenState extends State<BloomSplashScreen>
   void initState() {
     super.initState();
 
-    // 🎬 Animation controller
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     );
 
-    // 🔍 Scale animation
     _scaleAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
 
-    // 🌫️ Fade animation
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
     _controller.forward();
 
-    // ⏳ Navigate after splash
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
       _navigateAfterSplash();
@@ -115,7 +96,6 @@ class _BloomSplashScreenState extends State<BloomSplashScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 🌸 Animated Logo
               ScaleTransition(
                 scale: _scaleAnimation,
                 child: Container(
@@ -141,10 +121,7 @@ class _BloomSplashScreenState extends State<BloomSplashScreen>
                   ),
                 ),
               ),
-
               const SizedBox(height: 30),
-
-              // 🌸 App Name
               Text(
                 'Bloom',
                 style: GoogleFonts.playfairDisplay(
@@ -153,21 +130,20 @@ class _BloomSplashScreenState extends State<BloomSplashScreen>
                   color: const Color(0xFF6A1B9A),
                 ),
               ),
-
               const SizedBox(height: 10),
 
-              // 🌸 Tagline
+              // ✅ FONT CHANGED HERE
               Text(
                 'Grow through every cycle',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: Colors.grey,
+                style: GoogleFonts.cormorantGaramond(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey.shade700,
+                  letterSpacing: 0.6,
                 ),
               ),
 
               const SizedBox(height: 60),
-
-              // 🌸 Loader
               const CircularProgressIndicator(
                 strokeWidth: 3,
                 valueColor:

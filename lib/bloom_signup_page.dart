@@ -53,28 +53,27 @@ class _BloomSignUpPageState extends State<BloomSignUpPage> {
       final user = userCredential.user;
       if (user == null) throw Exception('User creation failed');
 
-      // 2️⃣ Create Firestore user document
+      // 2️⃣ Create Firestore user document (CLEAN & FINAL)
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .set({
         'fullName': _fullNameController.text.trim(),
         'email': _emailController.text.trim(),
-        'healthProfileCompleted': false,
-        'symptomsCompleted': false,
+
+        // 🔑 SINGLE ONBOARDING FLAG
+        'onboardingCompleted': false,
+
         'createdAt': FieldValue.serverTimestamp(),
       });
 
       if (!mounted) return;
 
-      // ✅ IMPORTANT:
-      // After signup → go to Splash
-      // Splash decides next screen
-      Navigator.pushReplacement(
+      // ✅ AFTER SIGNUP → SPLASH DECIDES FLOW
+      Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (_) => const BloomSplashScreen(),
-        ),
+        MaterialPageRoute(builder: (_) => const BloomSplashScreen()),
+            (route) => false,
       );
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -194,7 +193,8 @@ class _BloomSignUpPageState extends State<BloomSignUpPage> {
                   label: 'Confirm Password',
                   obscure: _obscureConfirmPassword,
                   onToggle: () => setState(
-                          () => _obscureConfirmPassword = !_obscureConfirmPassword),
+                          () => _obscureConfirmPassword =
+                      !_obscureConfirmPassword),
                   validator: (v) =>
                   v != _passwordController.text
                       ? 'Passwords do not match'
